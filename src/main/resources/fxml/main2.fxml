@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="1112.0" prefWidth="1500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.atguigu.admin.controller.MainController2">
+   <children>
+      <VBox fx:id="tableVBoxOne" alignment="CENTER" spacing="10" xmlns:fx="http://javafx.com/fxml/1">
+         <children>
+            <Text layoutX="25.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="表1" wrappingWidth="43.30029296875" />
+            <TextField fx:id="textTableOne" layoutX="78.0" layoutY="25.0" prefHeight="30.0" prefWidth="158.0" />
+            <Button fx:id="ButtonTableOne" layoutX="254.0" layoutY="25.0" mnemonicParsing="false" onAction="#onLoad" text="装载" />
+            <TableView fx:id="tableViewOne" layoutX="14.0" layoutY="70.0" prefHeight="111.0" prefWidth="377.0">
+            </TableView>
+            <Pagination fx:id="paginationOne" pageCount="1" />
+         </children>
+      </VBox>
+
+      <VBox fx:id="tableVBoxTwo" alignment="CENTER" layoutY="400.0" spacing="10" xmlns:fx="http://javafx.com/fxml/1">
+         <children>
+            <Text layoutX="25.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="表2" wrappingWidth="43.30029296875" />
+            <TextField fx:id="textTableTwo" layoutX="78.0" layoutY="212.0" prefHeight="30.0" prefWidth="158.0" />
+            <Button fx:id="ButtonTableTwo" layoutX="254.0" layoutY="212.0" mnemonicParsing="false" onAction="#onLoad" text="装载" />
+            <TableView fx:id="tableViewTwo" layoutX="14.0" layoutY="257.0" prefHeight="111.0" prefWidth="377.0">
+            </TableView>
+            <Pagination fx:id="paginationTwo" pageCount="1" />
+         </children>
+      </VBox>
+
+      <VBox fx:id="tableVBoxThree" alignment="CENTER" layoutY="800.0" spacing="10" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text layoutX="36.0" layoutY="418.0" strokeType="OUTSIDE" strokeWidth="0.0" text="表3" wrappingWidth="43.30029296875" />
+      <TextField fx:id="textTableThree" layoutX="89.0" layoutY="397.0" prefHeight="30.0" prefWidth="158.0" />
+      <Button fx:id="ButtonTableThree" layoutX="265.0" layoutY="397.0" mnemonicParsing="false" onAction="#onLoad" text="装载" />
+      <TableView fx:id="tableViewThree" layoutX="25.0" layoutY="442.0" prefHeight="111.0" prefWidth="377.0">
+         <columns>
+            <TableColumn prefWidth="75.0" text="C1" />
+            <TableColumn prefWidth="75.0" text="C2" />
+            <TableColumn prefWidth="75.0" text="Column X" />
+            <TableColumn prefWidth="75.0" text="Column X" />
+            <TableColumn prefWidth="75.0" text="Column X" />
+         </columns>
+      </TableView>
+      <Pagination fx:id="paginationThree" pageCount="1" />
+   </children>
+      </VBox>
+
+      <VBox fx:id="exeVBox" alignment="CENTER" layoutX="500" layoutY="100" spacing="10" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+            <Text fx:id="sqlHeadLine" layoutX="502.0" layoutY="66.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SQL语句" />
+            <TextArea fx:id="sqlTextArea" layoutX="454.0" layoutY="83.0" prefHeight="142.0" prefWidth="431.0" />
+            <Button fx:id="sqlButton" layoutX="914.0" layoutY="139.0" mnemonicParsing="false" onAction="#onSql" text="执行SQl" />
+            <TableView fx:id="sqlTableView" layoutX="436.0" layoutY="246.0" prefHeight="200.0" prefWidth="506.0">
+         </TableView>
+            <Pagination fx:id="paginationSql" pageCount="1" />
+            <Text fx:id="sqlExecuteHeadLine" layoutX="446.0" layoutY="471.0" strokeType="OUTSIDE" strokeWidth="0.0" text="执行说明" />
+            <TextArea fx:id="executionInfo" layoutX="436.0" layoutY="481.0" prefHeight="89.0" prefWidth="496.0" />
+   </children>
+      </VBox>
+   </children>
+</AnchorPane>

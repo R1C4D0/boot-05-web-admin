@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.atguigu.admin.controller.TableController">
+    <children>
+        <Label layoutX="236.0" layoutY="80.0" text="Welcome to my app!" />
+        <TextField fx:id="helloText" layoutX="132.0" layoutY="101.0" prefHeight="119.0" prefWidth="294.0" text="hello">
+         <font>
+            <Font size="54.0" />
+         </font></TextField>
+        <Button fx:id="submitButton" layoutX="264.0" layoutY="282.0" mnemonicParsing="false" onAction="#onSubmit" text="Submit" />
+    </children>
+</AnchorPane>
