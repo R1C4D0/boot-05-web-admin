@@ -8,8 +8,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +39,60 @@ public class MainController implements Initializable {
 
     @Autowired
     JdbcTemplate jdbcTemplate;
+
+    @FXML
+    private AnchorPane sqlRadioPane;
+
+    @FXML
+    private TextField addressTextField;
+
+    @FXML
+    private TextField sNameTextField;
+
+    @FXML
+    private TextField ageFromTextField;
+
+    @FXML
+    private RadioButton classRadioButton;
+
+    @FXML
+    private TextField sexTextField;
+
+    @FXML
+    private Button sqlRadioButton;
+
+    @FXML
+    private TextField departmentTextField;
+
+    @FXML
+    private RadioButton ageRadioButton;
+
+    @FXML
+    private RadioButton sIdRadioButton;
+
+    @FXML
+    private TextField sIdTextField;
+
+    @FXML
+    private RadioButton sexRadioButton;
+
+    @FXML
+    private RadioButton addressRadioButton;
+
+    @FXML
+    private RadioButton departmentRadioButton;
+
+    @FXML
+    private TextField ageToTextField;
+
+    @FXML
+    private RadioButton sNameRadioButton;
+
+    @FXML
+    private Group age;
+
+    @FXML
+    private TextField classTextField;
 
 
     @FXML
@@ -62,7 +119,7 @@ public class MainController implements Initializable {
     private List<TableColumn<Student, ?>> tableColumns = new ArrayList<>();
 
 
-    private ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();;
+    private ObservableList<ObservableList<String>> data = FXCollections.observableArrayList();
 
     // Pagination 对象，用于分页显示数据
     @FXML
@@ -118,13 +175,19 @@ public class MainController implements Initializable {
         data = FXCollections.observableArrayList();
         if (isSelect(sql)){
             String tableName = getTableNameBySql(sql);
-            log.info("table name:" +tableName);
-            initColumn(sqlTableView, tableName);
-            try {
-                queryData(tableName, paginationSql);
-            } catch (DataAccessException e) {
-                String errorMessage = e.getRootCause().getMessage();
-                executionInfo.setText(errorMessage);
+//            log.info("table name:" +tableName);
+
+            if (isTableExist(tableName)) {
+                initColumn(sqlTableView, tableName);
+                try {
+                    queryData(tableName, paginationSql);
+    //                executionInfo.setText();
+                } catch (DataAccessException e) {
+                    String errorMessage = Objects.requireNonNull(e.getRootCause()).getMessage();
+                    executionInfo.setText(errorMessage);
+                }
+            }else {
+                executionInfo.setText("table not exist");
             }
 
         }else {
@@ -132,6 +195,10 @@ public class MainController implements Initializable {
         }
     }
 
+    @FXML
+    public void onSqlRadio(ActionEvent actionEvent) {
+
+    }
     private boolean isSelect(String sql) {
         return sql.trim().toUpperCase().startsWith("SELECT");
     }
@@ -145,40 +212,39 @@ public class MainController implements Initializable {
         if (matcher.find()) {
             tableName = matcher.group(1);
         }
+        return tableName;
+    }
 
+    private boolean isTableExist(String tableName) {
         if (tableName != null) {
             try {
-                Connection conn = jdbcTemplate.getDataSource().getConnection();
+                Connection conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
                 DatabaseMetaData metaData = conn.getMetaData();
                 ResultSet tables = metaData.getTables(null, null, tableName, null);
                 boolean tableExists = tables.next();
                 tables.close();
                 conn.close();
 
-                if (tableExists) {
-                    return tableName;
-                } else {
-                    throw new RuntimeException("你所操纵的表不存在");
-                }
+                return tableExists;
+
             } catch (SQLException e) {
-                // handle exception
+                throw new RuntimeException(e);
             }
         }
-        return tableName;
-
+        return false;
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 //
+        initPagination();
+//                 将表格和分页控件添加到VBox中
+        initVBox();
         initColumn(tableViewOne, "student");
         initColumn(tableViewTwo, "course");
         initColumn(tableViewThree, "sc");
         initDataSet();
-//        // 将表格和分页控件添加到VBox中
-        initVBox();
 
-        initPagination();
 
 
     }
@@ -206,7 +272,7 @@ public class MainController implements Initializable {
     private void initDataSet() {
         queryData("student",paginationOne);
         queryData("course",paginationTwo);
-//        queryData("sc",paginationThree);
+        queryData("sc",paginationThree, 10000);
 //        for (ObservableList<String> row : data) {
 //            for (String cell : row) {
 //                System.out.print(cell + "\t");
@@ -228,10 +294,17 @@ public class MainController implements Initializable {
             tableView.getColumns().clear();
         }
 
-        for (int i = 0; i < columnNames.size(); i++) {
+        for (int i = 0; i < Objects.requireNonNull(columnNames).size(); i++) {
             final int colIndex = i;
             TableColumn<ObservableList<String>, String> column = new TableColumn<>(columnNames.get(i));
-            column.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().get(colIndex)));
+            column.setCellValueFactory(cellData -> {
+                ObservableList<String> rowValues = cellData.getValue();
+                if (rowValues.size() > colIndex) {
+                    return new ReadOnlyObjectWrapper<>(rowValues.get(colIndex));
+                } else {
+                    return new ReadOnlyObjectWrapper<>("");
+                }
+            });
             tableView.getColumns().add(column);
         }
     }
@@ -250,6 +323,20 @@ public class MainController implements Initializable {
     public void queryData(String tableName, Pagination pagination) {
         data = FXCollections.observableArrayList();
         String sql = "SELECT * FROM " + tableName;
+        jdbcTemplate.query(sql, rs -> {
+            ObservableList<String> row = FXCollections.observableArrayList();
+            int columnCount = rs.getMetaData().getColumnCount();
+            for (int i = 1; i <= columnCount; i++) {
+                row.add(rs.getString(i));
+            }
+            data.add(row);
+        });
+        pagination.setPageCount(getTotalPage(tableName, 5));
+        pagination.setCurrentPageIndex(1); // 切换到第一页
+    }
+    public void queryData(String tableName, Pagination pagination, int limit) {
+        data = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM " + tableName + " LIMIT " + limit;
         jdbcTemplate.query(sql, rs -> {
             ObservableList<String> row = FXCollections.observableArrayList();
             int columnCount = rs.getMetaData().getColumnCount();
