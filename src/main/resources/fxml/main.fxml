@@ -14,7 +14,7 @@
          <children>
             <Text layoutX="25.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="表1" wrappingWidth="43.30029296875" />
             <TextField fx:id="textTableOne" layoutX="78.0" layoutY="25.0" prefHeight="30.0" prefWidth="158.0" />
-            <Button fx:id="ButtonTableOne" layoutX="254.0" layoutY="25.0" mnemonicParsing="false" onAction="#onLoad" text="装载" />
+            <Button fx:id="ButtonTableOne" layoutX="254.0" layoutY="25.0" mnemonicParsing="false" onAction="#onLoadTableOne" text="装载" />
             <TableView fx:id="tableViewOne" layoutX="14.0" layoutY="70.0" prefHeight="111.0" prefWidth="377.0">
             </TableView>
             <Pagination fx:id="paginationOne" pageCount="1" />
@@ -25,7 +25,7 @@
          <children>
             <Text layoutX="25.0" layoutY="233.0" strokeType="OUTSIDE" strokeWidth="0.0" text="表2" wrappingWidth="43.30029296875" />
             <TextField fx:id="textTableTwo" layoutX="78.0" layoutY="212.0" prefHeight="30.0" prefWidth="158.0" />
-            <Button fx:id="ButtonTableTwo" layoutX="254.0" layoutY="212.0" mnemonicParsing="false" onAction="#onLoad" text="装载" />
+            <Button fx:id="ButtonTableTwo" layoutX="254.0" layoutY="212.0" mnemonicParsing="false" onAction="#onLoadTableTwo" text="装载" />
             <TableView fx:id="tableViewTwo" layoutX="14.0" layoutY="257.0" prefHeight="111.0" prefWidth="377.0">
             </TableView>
             <Pagination fx:id="paginationTwo" pageCount="1" />
@@ -36,7 +36,7 @@
    <children>
       <Text layoutX="36.0" layoutY="418.0" strokeType="OUTSIDE" strokeWidth="0.0" text="表3" wrappingWidth="43.30029296875" />
       <TextField fx:id="textTableThree" layoutX="89.0" layoutY="397.0" prefHeight="30.0" prefWidth="158.0" />
-      <Button fx:id="ButtonTableThree" layoutX="265.0" layoutY="397.0" mnemonicParsing="false" onAction="#onLoad" text="装载" />
+      <Button fx:id="ButtonTableThree" layoutX="265.0" layoutY="397.0" mnemonicParsing="false" onAction="#onLoadTableThree" text="装载" />
       <TableView fx:id="tableViewThree" layoutX="25.0" layoutY="442.0" prefHeight="111.0" prefWidth="377.0">
 
       </TableView>
@@ -58,54 +58,113 @@
       </VBox>
       <AnchorPane fx:id="sqlRadioPane" layoutX="500.0" layoutY="13.0" prefHeight="275.0" prefWidth="765.0">
          <children>
-            <Group layoutY="32.0">
+            <HBox layoutY="32.0">
                <children>
                   <RadioButton fx:id="sIdRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="学号" />
-                  <TextField fx:id="sIdTextField" layoutX="163.0" layoutY="17.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                     <TextField fx:id="sIdTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
-            <Group layoutY="72.0">
+            </HBox>
+            <HBox layoutY="72.0">
                <children>
                   <RadioButton fx:id="sNameRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="姓名" />
-                  <TextField fx:id="sNameTextField" layoutX="163.0" layoutY="17.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="sNameTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
-            <Group layoutY="112.0">
+            </HBox>
+            <HBox layoutY="112.0">
                <children>
                   <RadioButton fx:id="sexRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="性别" />
-                  <TextField fx:id="sexTextField" layoutX="163.0" layoutY="17.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="sexTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
-            <Group layoutX="400.0" layoutY="112.0">
+            </HBox>
+            <HBox layoutX="400.0" layoutY="112.0">
                <children>
                   <RadioButton fx:id="addressRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="地址" />
-                  <TextField fx:id="addressTextField" layoutX="163.0" layoutY="17.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="addressTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
-            <Group layoutX="400.0" layoutY="32.0">
+            </HBox>
+            <HBox layoutX="400.0" layoutY="32.0">
                <children>
                   <RadioButton fx:id="classRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="班级" />
-                  <TextField fx:id="classTextField" layoutX="163.0" layoutY="17.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="classTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
-            <Group layoutX="400.0" layoutY="72.0">
+            </HBox>
+            <HBox layoutX="400.0" layoutY="72.0">
                <children>
                   <RadioButton fx:id="departmentRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="系别" />
-                  <TextField fx:id="departmentTextField" layoutX="163.0" layoutY="17.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="departmentTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
-            <Group fx:id="age" layoutY="152.0">
+            </HBox>
+            <HBox layoutX="400.0" layoutY="192.0">
+               <children>
+                  <RadioButton fx:id="classNameRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="课名" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="classNameTextField" layoutX="163.0" layoutY="17.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+            <HBox layoutY="152.0">
                <children>
                   <RadioButton fx:id="ageRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="年龄自" />
-                  <TextField fx:id="ageFromTextField" layoutX="163.0" layoutY="17.0" prefHeight="30.0" prefWidth="146.0" />
-                  <Text layoutX="317.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="到" wrappingWidth="35.30029296875" />
-                  <TextField fx:id="ageToTextField" layoutX="360.0" layoutY="16.0" prefHeight="30.0" prefWidth="279.0" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="ageFromTextField" layoutX="163.0" layoutY="17.0" prefHeight="30.0" prefWidth="146.0" />
+                        <Text layoutX="317.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="到" wrappingWidth="35.30029296875" />
+                        <TextField fx:id="ageToTextField" layoutX="360.0" layoutY="16.0" prefHeight="30.0" prefWidth="279.0" />
+                     </children>
+                  </HBox>
                </children>
-            </Group>
+            </HBox>
+            <HBox layoutY="192">
+               <children>
+                  <RadioButton fx:id="classIdRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="课号" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="classIdTextField" layoutX="163.0" layoutY="17.0" prefHeight="30.0" prefWidth="146.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
+            <HBox layoutY="232">
+               <children>
+                  <RadioButton fx:id="scoreRadioButton" layoutX="24.0" layoutY="22.0" mnemonicParsing="false" text="成绩" />
+                  <HBox alignment="CENTER_LEFT" spacing="5">
+                     <children>
+                        <TextField fx:id="scoreTextField" layoutX="163.0" layoutY="17.0" prefHeight="30.0" prefWidth="146.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
             <Button fx:id="sqlRadioButton" layoutX="374.0" layoutY="223.0" mnemonicParsing="false" onAction="#onSqlRadio" text="构造sql语句" textFill="#d71c1c">
                <font>
                   <Font size="16.0" />
-               </font></Button>
+               </font>
+            </Button>
             <Text layoutX="40.0" layoutY="30.0" strokeType="OUTSIDE" strokeWidth="0.0" text="检索条件">
                <font>
                   <Font size="23.0" />

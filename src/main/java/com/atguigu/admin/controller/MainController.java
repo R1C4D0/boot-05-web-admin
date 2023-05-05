@@ -1,6 +1,7 @@
 package com.atguigu.admin.controller;
 
 import com.atguigu.admin.bean.Student;
+import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import de.felixroske.jfxsupport.FXMLController;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
@@ -12,6 +13,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import lombok.extern.slf4j.Slf4j;
@@ -26,10 +28,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,12 +36,15 @@ import java.util.regex.Pattern;
 @FXMLController
 public class MainController implements Initializable {
 
+
     @Autowired
     JdbcTemplate jdbcTemplate;
 
     @FXML
     private AnchorPane sqlRadioPane;
 
+
+    private Map<RadioButton, List<TextField>> radioButtonTextFieldMap;
     @FXML
     private TextField addressTextField;
 
@@ -94,7 +96,19 @@ public class MainController implements Initializable {
     @FXML
     private TextField classTextField;
 
+    @FXML
+    public RadioButton classNameRadioButton;
+    @FXML
+    public TextField classNameTextField;
+    @FXML
+    public RadioButton classIdRadioButton;
+    @FXML
+    public TextField classIdTextField;
+    @FXML
 
+    public RadioButton scoreRadioButton;
+    @FXML
+    public TextField scoreTextField;
     @FXML
     private VBox exeVBox;
     @FXML
@@ -163,10 +177,7 @@ public class MainController implements Initializable {
     @FXML
     private TableView<ObservableList<String>> tableViewTwo;
 
-    @FXML
-    void onLoad(ActionEvent event) {
 
-    }
 
     @FXML
     void onSql(ActionEvent event) {
@@ -180,7 +191,7 @@ public class MainController implements Initializable {
             if (isTableExist(tableName)) {
                 initColumn(sqlTableView, tableName);
                 try {
-                    queryData(tableName, paginationSql);
+                    queryData(tableName, paginationSql, 10000);
     //                executionInfo.setText();
                 } catch (DataAccessException e) {
                     String errorMessage = Objects.requireNonNull(e.getRootCause()).getMessage();
@@ -197,8 +208,101 @@ public class MainController implements Initializable {
 
     @FXML
     public void onSqlRadio(ActionEvent actionEvent) {
+        String sql = "select student.s_id as stu_sid,\n" +
+                "       student.s_name,\n" +
+                "       student.s_sex,\n" +
+                "       student.s_age,\n" +
+                "       student.s_class,\n" +
+                "       sc.s_id as sc_sid,\n" +
+                "       sc.c_id,\n" +
+                "       sc.score,\n" +
+                "       course.c_id as course_cid,\n" +
+                "       course.c_name,\n" +
+                "       course.credit,\n" +
+                "       course.c_hours,\n" +
+                "       course.t_id\n" +
+                "from student\n" +
+                "join sc on student.s_id = sc.s_id\n" +
+                "join course on course.c_id = sc.c_id\n";
+        if(sIdRadioButton.isSelected()){
+            sql += "where student.s_id = " + radioButtonTextFieldMap.get(sIdRadioButton).get(0).getText() + "\n";
 
+        }else {
+            sql += "where 1 = 1 \n";
+        }
+        if(classRadioButton.isSelected()){
+            sql +=  "and student.s_class = " + radioButtonTextFieldMap.get(classRadioButton).get(0).getText() + "\n" ;
+        }
+        if(sNameRadioButton.isSelected()){
+            sql += "and student.s_name = " + radioButtonTextFieldMap.get(sNameRadioButton).get(0).getText() + "\n";
+        }
+        if (sexRadioButton.isSelected()){
+            sql += "and student.s_sex = " + "'" + radioButtonTextFieldMap.get(sexRadioButton).get(0).getText().toUpperCase()  + "'"+ "\n";
+        }
+        if (ageRadioButton.isSelected()){
+            sql += "and student.s_age > " + radioButtonTextFieldMap.get(ageRadioButton).get(0).getText() + "\n";
+            sql += "and student.s_age < " + radioButtonTextFieldMap.get(ageRadioButton).get(1).getText() + "\n";
+        }
+        if (classIdRadioButton.isSelected()) {
+            sql += " and course.c_id = " + addSingleQuotation(radioButtonTextFieldMap.get(classIdRadioButton).get(0).getText()) + "\n";
+        }
+        if (scoreRadioButton.isSelected()) {
+            sql += " and course.credit = " + addSingleQuotation(radioButtonTextFieldMap.get(scoreRadioButton).get(0).getText() )+ "\n";
+        }
+        if (classNameRadioButton.isSelected()){
+            sql += " and course.c_name = " + addSingleQuotation(radioButtonTextFieldMap.get(classNameRadioButton).get(0).getText()) + "\n";
+        }
+        sql += " limit 2000";
+        log.info(sql);
+//                "where student.s_id = " +  + "\n" +
+//                "and student.s_class = 1\n" +
+//                "and student.s_name = '施平伦'\n" +
+//                "and student.s_sex = 'F'\n" +
+//                "and student.s_age > 1\n" +
+//                "and student.s_age < 100";
+        if (isSelect(sql)) {
+            String tableName = getTableNameBySql(sql);
+//            log.info("table name:" +tableName);
+
+//            if (isTableExist(tableName)) {
+                initColumn(sqlTableView, "student");
+                addColumn(sqlTableView,"sc");
+                addColumn(sqlTableView,"course");
+//            }
+        }
+        queryDataBysql(sql, paginationSql);
     }
+
+    public void initializeOnSqlRadio() {
+        radioButtonTextFieldMap = new HashMap<>();
+        for (Node node : sqlRadioPane.getChildren()) {
+            if (node instanceof HBox) {
+                HBox HBox = (HBox) node;
+                RadioButton radioButton = null;
+                List<TextField> textFieldList = new ArrayList<>();
+
+                for (Node childNode : HBox.getChildren()) {
+                    if (childNode instanceof RadioButton) {
+                        radioButton = (RadioButton) childNode;
+                    } else if (childNode instanceof HBox) {
+                        HBox hbox = (HBox) childNode;
+
+                        for (Node paneChildNode : hbox.getChildren()) {
+                            if (paneChildNode instanceof TextField) {
+                                textFieldList.add((TextField) paneChildNode);
+                            }
+                        }
+                    }
+                }
+
+                if (radioButton != null && !textFieldList.isEmpty()) {
+                    radioButtonTextFieldMap.put(radioButton, textFieldList);
+                }
+            }
+        }
+//        log.info(String.valueOf(radioButtonTextFieldMap.containsKey(addressRadioButton)));
+    }
+
     private boolean isSelect(String sql) {
         return sql.trim().toUpperCase().startsWith("SELECT");
     }
@@ -245,6 +349,7 @@ public class MainController implements Initializable {
         initColumn(tableViewThree, "sc");
         initDataSet();
 
+        initializeOnSqlRadio();
 
 
     }
@@ -282,6 +387,12 @@ public class MainController implements Initializable {
     }
 
     private void initColumn(TableView<ObservableList<String>> tableView, String tableName) {
+        if (!tableView.getColumns().isEmpty()) {
+            tableView.getColumns().clear();
+        }
+        addColumn(tableView, tableName);
+    }
+    private void addColumn(TableView<ObservableList<String>> tableView, String tableName) {
         // 初始化表格列
         List<String> columnNames = null; // 获取表格列名
         try {
@@ -289,13 +400,11 @@ public class MainController implements Initializable {
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
-        if (!tableView.getColumns().isEmpty()) {
-            tableView.getColumns().clear();
-        }
-
+        int base = tableView.getColumns().size();
+        //i:最新要添加到tableView的数据库表的行在最新要添加到tableView的数据库表中的序号
+//        index:最新要添加到tableView的数据库表的行在整个tableView中的序号
         for (int i = 0; i < Objects.requireNonNull(columnNames).size(); i++) {
-            final int colIndex = i;
+            final int colIndex = i + base;
             TableColumn<ObservableList<String>, String> column = new TableColumn<>(columnNames.get(i));
             column.setCellValueFactory(cellData -> {
                 ObservableList<String> rowValues = cellData.getValue();
@@ -321,18 +430,7 @@ public class MainController implements Initializable {
         return tableVBoxOne;
     }
     public void queryData(String tableName, Pagination pagination) {
-        data = FXCollections.observableArrayList();
-        String sql = "SELECT * FROM " + tableName;
-        jdbcTemplate.query(sql, rs -> {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            int columnCount = rs.getMetaData().getColumnCount();
-            for (int i = 1; i <= columnCount; i++) {
-                row.add(rs.getString(i));
-            }
-            data.add(row);
-        });
-        pagination.setPageCount(getTotalPage(tableName, 5));
-        pagination.setCurrentPageIndex(1); // 切换到第一页
+        queryData(tableName, pagination, Integer.MAX_VALUE);
     }
     public void queryData(String tableName, Pagination pagination, int limit) {
         data = FXCollections.observableArrayList();
@@ -348,6 +446,36 @@ public class MainController implements Initializable {
         pagination.setPageCount(getTotalPage(tableName, 5));
         pagination.setCurrentPageIndex(1); // 切换到第一页
     }
+    public void queryDataBysql(String sql, Pagination pagination) {
+        data = FXCollections.observableArrayList();
+        List<Map<String, Object>> queryResult = null;
+        try {
+            queryResult = jdbcTemplate.queryForList(sql);
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+        try {
+            for (Map<String, Object> row : Objects.requireNonNull(queryResult)) {
+                ObservableList<String> observableRow = FXCollections.observableArrayList();
+                for (Object value : row.values()) {
+                    if (value != null) {
+                        observableRow.add(value.toString());
+                    } else {
+                        observableRow.add("");
+                    }
+                }
+                data.add(observableRow);
+            }
+        } catch (Exception e) {
+            initColumn(sqlTableView, "");
+            e.printStackTrace();
+        }
+        if (null == queryResult || queryResult.isEmpty()){
+            initColumn(sqlTableView, "");
+        }
+        pagination.setPageCount(getTotalPage(data.size(), 5));
+        pagination.setCurrentPageIndex(1); // 切换到第一页
+    }
 
     // 获取表的列数
     private int getColumnCount(String tableName) {
@@ -359,6 +487,10 @@ public class MainController implements Initializable {
     private int getTotalPage(String tableName, int pageSize) {
         String sql = "SELECT COUNT(*) FROM " + tableName;
         int rowCount = jdbcTemplate.queryForObject(sql, Integer.class);
+        return (rowCount + pageSize - 1) / pageSize;
+    }
+    // 获取表的总页数
+    private int getTotalPage(int rowCount, int pageSize) {
         return (rowCount + pageSize - 1) / pageSize;
     }
     private List<String> getColumnNames(String tableName) throws SQLException {
@@ -378,5 +510,49 @@ public class MainController implements Initializable {
         }
         return columnNames;
     }
-
+    @FXML
+    public void onLoadTableOne(ActionEvent actionEvent) {
+        onLoad(1);
+    }
+    @FXML
+    public void onLoadTableTwo(ActionEvent actionEvent) {
+        onLoad(2);
+    }
+    @FXML
+    public void onLoadTableThree(ActionEvent actionEvent) {
+        onLoad(3);
+    }
+    void onLoad(int tableNumber) {
+        String tableName = "";
+        Pagination pagination;
+        TableView<ObservableList<String>> tableView;
+        switch (tableNumber) {
+            case 1 :
+                tableName = textTableOne.getText();
+                pagination = paginationOne;
+                tableView = tableViewOne;
+                break;
+            case 2 :
+                tableName = textTableTwo.getText();
+                pagination = paginationTwo;
+                tableView = tableViewTwo;
+                break;
+            case 3 :
+                tableName = textTableThree.getText();
+                pagination = paginationThree;
+                tableView = tableViewThree;
+                break;
+            default:
+                tableName = "student";
+                pagination = paginationOne;
+                tableView = tableViewOne;
+        }
+        if (isTableExist(tableName)){
+            initColumn(tableView, tableName);
+            queryData(tableName, pagination, 10000);
+        }
+    }
+    private String addSingleQuotation(String name){
+        return "'" + name + "'";
+    }
 }
