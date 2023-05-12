@@ -22,6 +22,7 @@ public class GenerateData {
         }
         generateData(filePath, 10000);
     }
+
     public static void generateData(String filePath, int n) throws IOException {
         Random random = new Random();
         try (DataOutputStream out = new DataOutputStream(new FileOutputStream(filePath))) {
